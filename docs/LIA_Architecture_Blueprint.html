@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leadership Intel Agent — V1 Architecture & Technology Blueprint</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #F8F9FB; color: #1a1a2e; }
+
+  .page { max-width: 1100px; margin: 0 auto; padding: 40px 32px; }
+
+  /* Header */
+  .header { background: #1B2B4B; color: white; padding: 40px 32px 32px; margin-bottom: 0; }
+  .header-inner { max-width: 1100px; margin: 0 auto; }
+  .brand { font-size: 11px; letter-spacing: 2px; color: #7B9EC4; margin-bottom: 12px; text-transform: uppercase; }
+  .header h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
+  .header .tagline { font-size: 16px; color: #5DCAA5; font-style: italic; margin-bottom: 20px; }
+  .header-meta { display: flex; gap: 24px; flex-wrap: wrap; }
+  .meta-pill { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 4px 14px; font-size: 12px; color: #B8CCDF; }
+
+  /* Section titles */
+  .section { padding: 32px 0 0; }
+  .section-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #0F6E56; font-weight: 600; margin-bottom: 8px; }
+  .section-title { font-size: 20px; font-weight: 700; color: #1B2B4B; margin-bottom: 4px; }
+  .section-sub { font-size: 13px; color: #666; margin-bottom: 20px; }
+
+  /* Cards */
+  .card { background: white; border-radius: 10px; border: 1px solid #E8ECF0; padding: 20px; }
+  .card-title { font-size: 13px; font-weight: 700; color: #1B2B4B; margin-bottom: 4px; }
+  .card-sub { font-size: 12px; color: #888; }
+
+  /* Three column grid */
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+  /* Column headers */
+  .col-header { border-radius: 8px; padding: 14px 16px; margin-bottom: 12px; }
+  .col-header h3 { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+  .col-header p { font-size: 11px; opacity: 0.8; }
+  .col-navy { background: #1B2B4B; color: white; }
+  .col-teal { background: #0F6E56; color: white; }
+  .col-purple { background: #3C3489; color: white; }
+  .col-coral { background: #D85A30; color: white; }
+
+  /* Input/output items */
+  .item { background: white; border: 1px solid #E8ECF0; border-radius: 8px; padding: 12px 14px; margin-bottom: 8px; }
+  .item-title { font-size: 12px; font-weight: 600; color: #1B2B4B; margin-bottom: 2px; }
+  .item-sub { font-size: 11px; color: #888; }
+  .item.navy { border-left: 3px solid #1B2B4B; }
+  .item.teal { border-left: 3px solid #0F6E56; }
+  .item.purple { border-left: 3px solid #3C3489; }
+  .item.coral { border-left: 3px solid #D85A30; }
+  .item.amber { border-left: 3px solid #BA7517; background: #FFFBF0; }
+
+  /* Intelligence layer */
+  .intel-layer { background: #F0EEF8; border: 1px solid #AFA9EC; border-radius: 10px; padding: 16px; }
+  .intel-item { background: white; border: 1px solid #CECBF6; border-radius: 6px; padding: 8px 12px; margin-bottom: 6px; font-size: 11px; color: #3C3489; font-weight: 500; }
+  .intel-item:last-child { margin-bottom: 0; }
+
+  /* Flow arrows */
+  .flow-row { display: flex; align-items: center; gap: 0; margin: 24px 0; }
+  .flow-col { flex: 1; }
+  .flow-arrow { width: 40px; text-align: center; color: #CCC; font-size: 20px; flex-shrink: 0; }
+
+  /* Tech stack */
+  .tech-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .tech-item { background: white; border: 1px solid #E8ECF0; border-radius: 8px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; }
+  .tech-badge { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: white; flex-shrink: 0; }
+  .tech-name { font-size: 13px; font-weight: 600; color: #1B2B4B; margin-bottom: 2px; }
+  .tech-role { font-size: 11px; color: #888; margin-bottom: 4px; }
+  .tech-detail { font-size: 11px; color: #555; }
+
+  /* Trigger model */
+  .trigger-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+  .trigger-card { border-radius: 8px; padding: 14px 16px; }
+  .trigger-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .trigger-card p { font-size: 11px; opacity: 0.85; }
+  .trigger-gray { background: #F1EFE8; color: #2C2C2A; border: 1px solid #D3D1C7; }
+  .trigger-purple { background: #EEEDFE; color: #26215C; border: 1px solid #AFA9EC; }
+  .trigger-teal { background: #E1F5EE; color: #04342C; border: 1px solid #5DCAA5; }
+
+  /* Principles */
+  .principle { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; align-items: flex-start; }
+  .principle:last-child { border-bottom: none; }
+  .principle-num { width: 24px; height: 24px; background: #1B2B4B; color: white; border-radius: 50%; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+  .principle-text strong { font-size: 13px; color: #1B2B4B; display: block; margin-bottom: 2px; }
+  .principle-text span { font-size: 12px; color: #666; }
+
+  /* Scope table */
+  .scope-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .scope-table th { background: #1B2B4B; color: white; padding: 10px 14px; text-align: left; font-weight: 600; font-size: 11px; }
+  .scope-table td { padding: 10px 14px; border-bottom: 1px solid #F0F0F0; vertical-align: top; }
+  .scope-table tr:last-child td { border-bottom: none; }
+  .scope-table tr:nth-child(even) td { background: #FAFAFA; }
+  .yes { color: #0F6E56; font-weight: 600; }
+  .no { color: #D85A30; }
+  .v2 { color: #3C3489; font-style: italic; }
+
+  /* Build sessions */
+  .session { display: flex; gap: 16px; padding: 16px 0; border-bottom: 1px solid #F0F0F0; align-items: flex-start; }
+  .session:last-child { border-bottom: none; }
+  .session-badge { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
+  .s1 { background: #E1F5EE; color: #0F6E56; }
+  .s2 { background: #E8EDF5; color: #1B2B4B; }
+  .s3 { background: #FAECE7; color: #D85A30; }
+  .s4 { background: #EEEDFE; color: #3C3489; }
+  .session-content strong { font-size: 13px; color: #1B2B4B; display: block; margin-bottom: 2px; }
+  .session-content span { font-size: 12px; color: #666; }
+  .session-time { font-size: 11px; color: #AAA; white-space: nowrap; margin-left: auto; }
+
+  /* New badge */
+  .new-badge { display: inline-block; background: #BA7517; color: white; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px; margin-left: 6px; vertical-align: middle; }
+
+  /* Divider */
+  .divider { height: 1px; background: #E8ECF0; margin: 32px 0; }
+
+  /* Footer */
+  .footer { background: #1B2B4B; color: #7B9EC4; padding: 24px 32px; margin-top: 48px; }
+  .footer-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: gap; }
+  .footer-brand { font-size: 14px; font-weight: 700; color: white; }
+  .footer-meta { font-size: 12px; }
+
+  @media (max-width: 768px) {
+    .grid-3, .grid-4, .trigger-row, .tech-grid { grid-template-columns: 1fr; }
+    .grid-2 { grid-template-columns: 1fr; }
+    .flow-row { flex-direction: column; }
+    .flow-arrow { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="brand">4thLayerLab Strategy &amp; Advisory</div>
+    <h1>Leadership Intel Agent</h1>
+    <div class="tagline">The intelligence layer that runs with you.</div>
+    <div class="header-meta">
+      <span class="meta-pill">V1–V4 Product Blueprint</span>
+      <span class="meta-pill">June 2026</span>
+      <span class="meta-pill">Confidential</span>
+      <span class="meta-pill">For technology executives &amp; senior leaders</span>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- WHAT IT IS -->
+  <div class="section">
+    <div class="section-label">What we are building</div>
+    <div class="section-title">An AI Chief of Staff for senior leaders</div>
+    <div class="section-sub">LIA learns your organization, your stakeholders, and your priorities — then briefs you, prepares your communications, and surfaces what you need to know before you need to know it. From day one through transformation. All outputs are dynamically generated from your accumulated context — nothing is hardcoded or templated.</div>
+
+    <div class="grid-3" style="margin-top:16px;">
+      <div class="card">
+        <div style="font-size:22px;margin-bottom:8px;">🧠</div>
+        <div class="card-title">Captures your judgment</div>
+        <div class="card-sub">Voice observations, daily reflections, and absorbed documents build a living picture of your world — not just what was said, but what you noticed.</div>
+      </div>
+      <div class="card">
+        <div style="font-size:22px;margin-bottom:8px;">⚡</div>
+        <div class="card-title">Reasons, not just generates</div>
+        <div class="card-sub">LIA synthesizes across everything it knows to identify patterns, flag contradictions, and surface what matters — before you ask.</div>
+      </div>
+      <div class="card">
+        <div style="font-size:22px;margin-bottom:8px;">📈</div>
+        <div class="card-title">Compounds over time</div>
+        <div class="card-sub">Every input makes LIA smarter. Week 1 it knows your mandate. Month 6 it knows your org better than anyone who just joined.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- FULL ARCHITECTURE: 3 COLUMNS -->
+  <div class="section">
+    <div class="section-label">V1 Architecture</div>
+    <div class="section-title">Inputs → Intelligence layer → Outputs</div>
+    <div class="section-sub">Three input streams feed a continuously learning context engine that generates dynamic, audience-aware outputs on demand.</div>
+
+    <div class="flow-row" style="align-items:flex-start; gap:16px;">
+
+      <!-- INPUTS -->
+      <div class="flow-col">
+        <div class="col-header col-navy">
+          <h3>Inputs</h3>
+          <p>Three frictionless capture streams</p>
+        </div>
+
+        <div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#888;margin:12px 0 6px;font-weight:600;">Observe</div>
+        <div class="item navy">
+          <div class="item-title">Voice observation memo</div>
+          <div class="item-sub">90 seconds after any meeting. Unfiltered, immediate. Phone transcribes automatically.</div>
+        </div>
+
+        <div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#888;margin:12px 0 6px;font-weight:600;">Absorb</div>
+        <div class="item navy">
+          <div class="item-title">Documents &amp; decks</div>
+          <div class="item-sub">PDF, Word, PowerPoint — anything shared with you. Drag and drop.</div>
+        </div>
+        <div class="item navy">
+          <div class="item-title">Email threads</div>
+          <div class="item-sub">Paste significant threads. No inbox integration needed.</div>
+        </div>
+        <div class="item navy">
+          <div class="item-title">Meeting transcripts</div>
+          <div class="item-sub">Teams or Zoom native transcripts when available. Optional, not required.</div>
+        </div>
+
+        <div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#888;margin:12px 0 6px;font-weight:600;">Reflect</div>
+        <div class="item navy">
+          <div class="item-title">Daily reflection check-in</div>
+          <div class="item-sub">LIA asks 3 smart questions based on your day. You answer in 5 minutes. Every day.</div>
+        </div>
+
+        <div style="background:#E8EDF5;border-radius:8px;padding:12px;margin-top:12px;">
+          <div style="font-size:11px;font-weight:700;color:#1B2B4B;margin-bottom:4px;">Zero IT approval required</div>
+          <div style="font-size:11px;color:#555;">LIA is a local HTML file. Nothing touches the corporate network. No install. No request.</div>
+        </div>
+      </div>
+
+      <!-- ARROW -->
+      <div class="flow-arrow" style="padding-top:60px;">→</div>
+
+      <!-- INTELLIGENCE LAYER -->
+      <div class="flow-col">
+        <div class="col-header col-purple">
+          <h3>Intelligence layer</h3>
+          <p>Context engine — always learning</p>
+        </div>
+
+        <div class="intel-layer">
+          <div class="intel-item">Accumulates all inputs into context store</div>
+          <div class="intel-item">Synthesizes patterns across sources</div>
+          <div class="intel-item">Identifies gaps in your understanding</div>
+          <div class="intel-item">Tracks decisions — what, who, when, why</div>
+          <div class="intel-item">Flags contradictions between sources</div>
+          <div class="intel-item">Asks diagnostic questions to fill gaps</div>
+          <div class="intel-item">Builds your stakeholder intelligence</div>
+          <div class="intel-item">Understands audience for each output</div>
+          <div class="intel-item">Constructs narrative — never fills templates</div>
+          <div class="intel-item">Chooses slide layouts from content</div>
+          <div class="intel-item">Writes speaker notes per slide</div>
+          <div class="intel-item">Gets smarter every single day</div>
+        </div>
+
+        <div style="background:#EEEDFE;border-radius:8px;padding:12px;margin-top:12px;">
+          <div style="font-size:11px;font-weight:700;color:#3C3489;margin-bottom:4px;">The core principle</div>
+          <div style="font-size:11px;color:#534AB7;">Nothing is hardcoded. Every output is generated dynamically from whatever is in the context store at that moment. Same output type, different context = completely different document.</div>
+        </div>
+
+        <div style="background:#EEEDFE;border-radius:8px;padding:12px;margin-top:8px;">
+          <div style="font-size:11px;font-weight:700;color:#3C3489;margin-bottom:4px;">Output triggers</div>
+          <div class="trigger-row" style="margin:8px 0 0;grid-template-columns:1fr;gap:6px;">
+            <div class="trigger-gray" style="border-radius:6px;padding:8px 10px;">
+              <div style="font-size:11px;font-weight:700;margin-bottom:2px;">Time-based</div>
+              <div style="font-size:10px;">End of day, week, or phase milestone</div>
+            </div>
+            <div class="trigger-purple" style="border-radius:6px;padding:8px 10px;">
+              <div style="font-size:11px;font-weight:700;margin-bottom:2px;">Moment-based</div>
+              <div style="font-size:10px;">Meeting coming up, specific audience</div>
+            </div>
+            <div class="trigger-teal" style="border-radius:6px;padding:8px 10px;">
+              <div style="font-size:11px;font-weight:700;margin-bottom:2px;">Planning-based</div>
+              <div style="font-size:10px;">Based on what I learned, what next?</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ARROW -->
+      <div class="flow-arrow" style="padding-top:60px;">→</div>
+
+      <!-- OUTPUTS -->
+      <div class="flow-col">
+        <div class="col-header col-teal">
+          <h3>Outputs</h3>
+          <p>Dynamic, audience-aware, never generic</p>
+        </div>
+
+        <div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#888;margin:0 0 6px;font-weight:600;">Word documents</div>
+        <div class="item coral">
+          <div class="item-title">First week summary <span class="new-badge">New</span></div>
+          <div class="item-sub">All artifacts + observations → McKinsey format → for CIO or manager</div>
+        </div>
+        <div class="item coral">
+          <div class="item-title">Next 30-day plan <span class="new-badge">New</span></div>
+          <div class="item-sub">Built from what you actually learned — specific, named, prioritized</div>
+        </div>
+        <div class="item coral">
+          <div class="item-title">Stakeholder briefs</div>
+          <div class="item-sub">1-pager per key relationship</div>
+        </div>
+        <div class="item coral">
+          <div class="item-title">Investment case</div>
+          <div class="item-sub">For budget asks and approvals</div>
+        </div>
+
+        <div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#888;margin:10px 0 6px;font-weight:600;">PowerPoint decks</div>
+        <div class="item teal">
+          <div class="item-title">Entry brief</div>
+          <div class="item-sub">Day 1 point of view</div>
+        </div>
+        <div class="item teal">
+          <div class="item-title">30-day assessment</div>
+          <div class="item-sub">Findings, themes, capability gaps</div>
+        </div>
+        <div class="item teal">
+          <div class="item-title">90-day strategic priorities</div>
+          <div class="item-sub">Bets, team plan, investment asks</div>
+        </div>
+        <div class="item teal">
+          <div class="item-title">Transformation roadmap</div>
+          <div class="item-sub">Wave planning, sequencing</div>
+        </div>
+        <div class="item teal">
+          <div class="item-title">Board presentations</div>
+          <div class="item-sub">Strategy and investment case</div>
+        </div>
+
+        <div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#888;margin:10px 0 6px;font-weight:600;">Intelligence artifacts</div>
+        <div class="item purple">
+          <div class="item-title">Daily reflection brief</div>
+          <div class="item-sub">What LIA learned today, what to focus on</div>
+        </div>
+        <div class="item purple">
+          <div class="item-title">Weekly intel brief</div>
+          <div class="item-sub">Patterns, signals, open questions</div>
+        </div>
+        <div class="item purple">
+          <div class="item-title">Stakeholder trust map</div>
+          <div class="item-sub">Aligned, at risk, unknown</div>
+        </div>
+        <div class="item purple">
+          <div class="item-title">Decisions log</div>
+          <div class="item-sub">What, who, why, when</div>
+        </div>
+        <div class="item purple">
+          <div class="item-title">Early wins tracker</div>
+          <div class="item-sub">Momentum visible to the org</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- TECHNOLOGY STACK -->
+  <div class="section">
+    <div class="section-label">Technology</div>
+    <div class="section-title">What LIA is built with</div>
+    <div class="section-sub">Single HTML file. Local browser. No server. No IT approval. No install. Existing Anthropic API key.</div>
+
+    <div class="tech-grid" style="margin-top:16px;">
+      <div class="tech-item">
+        <div class="tech-badge" style="background:#1B2B4B;">UI</div>
+        <div>
+          <div class="tech-name">Single HTML file</div>
+          <div class="tech-role">Runtime environment</div>
+          <div class="tech-detail">Runs locally in Chrome. Double-click to open. No hosting, no deployment, no IT request required. Same pattern as Agent 1 (Vendor Evaluation).</div>
+        </div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-badge" style="background:#D85A30;">AI</div>
+        <div>
+          <div class="tech-name">Anthropic Claude API</div>
+          <div class="tech-role">Intelligence engine</div>
+          <div class="tech-detail">claude-sonnet-4-6 model. Same API key as existing tools. ~$0.05–0.15 per output generation. Max tokens 8000 for rich output.</div>
+        </div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-badge" style="background:#3C3489;">DB</div>
+        <div>
+          <div class="tech-name">GitHub private repo</div>
+          <div class="tech-role">Context store</div>
+          <div class="tech-detail">Structured /context folder. Subfolders: /observe /absorb /reflect /decisions. Read via GitHub API. Version controlled. Team can contribute.</div>
+        </div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-badge" style="background:#0F6E56;">PPT</div>
+        <div>
+          <div class="tech-name">PptxGenJS</div>
+          <div class="tech-role">PowerPoint renderer</div>
+          <div class="tech-detail">Runs entirely in browser. Generates fully editable PPTX files. No backend required. Consulting-grade layouts: navy/teal/orange, McKinsey standards.</div>
+        </div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-badge" style="background:#185FA5;">DOC</div>
+        <div>
+          <div class="tech-name">docx.js</div>
+          <div class="tech-role">Word document renderer</div>
+          <div class="tech-detail">Generates fully editable Word documents in browser. McKinsey format: strong headlines, structured evidence, clear so-what. Downloadable instantly.</div>
+        </div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-badge" style="background:#854F0B;">IN</div>
+        <div>
+          <div class="tech-name">FileReader API + Web Speech</div>
+          <div class="tech-role">Input processing</div>
+          <div class="tech-detail">PDF, DOCX, PPTX parsed client-side via FileReader. Voice memos transcribed via Web Speech API or uploaded as text. Zero external dependencies.</div>
+        </div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-badge" style="background:#639922;">VS</div>
+        <div>
+          <div class="tech-name">Private GitHub repo</div>
+          <div class="tech-role">Version control</div>
+          <div class="tech-detail">Consistent with Agent 1 pattern. Commit after every working session. Branch per major feature. Clean rollback available.</div>
+        </div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-badge" style="background:#993C1D;">V2</div>
+        <div>
+          <div class="tech-name">Vercel + Stripe</div>
+          <div class="tech-role">Future: hosting + billing</div>
+          <div class="tech-detail">V2 roadmap only. Vercel for hosting when ready to share externally. Stripe for billing when monetization begins. Not in V1 scope.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- DESIGN PRINCIPLES -->
+  <div class="section">
+    <div class="section-label">Design principles</div>
+    <div class="section-title">What governs every build decision</div>
+    <div class="section-sub">These principles were established through the product design conversation and apply to every session.</div>
+
+    <div class="card" style="margin-top:16px;">
+      <div class="principle">
+        <div class="principle-num">1</div>
+        <div class="principle-text">
+          <strong>Nothing is hardcoded</strong>
+          <span>Every output is generated dynamically from context. There are no templates with placeholder fields. LIA reasons about what to include, in what order, with what emphasis — every time.</span>
+        </div>
+      </div>
+      <div class="principle">
+        <div class="principle-num">2</div>
+        <div class="principle-text">
+          <strong>Audience-aware always</strong>
+          <span>The same week's context produces a completely different document for a CIO versus a direct report versus a board. LIA knows who is reading and adapts accordingly.</span>
+        </div>
+      </div>
+      <div class="principle">
+        <div class="principle-num">3</div>
+        <div class="principle-text">
+          <strong>Zero friction capture</strong>
+          <span>If it takes more than 90 seconds to add something to LIA's context, it won't happen. Every input mechanism is designed around the busiest executive day imaginable.</span>
+        </div>
+      </div>
+      <div class="principle">
+        <div class="principle-num">4</div>
+        <div class="principle-text">
+          <strong>Judgment over transcription</strong>
+          <span>LIA captures how the leader sees the world, not just what was said. A voice observation after a meeting is more valuable than a transcript because it includes interpretation.</span>
+        </div>
+      </div>
+      <div class="principle">
+        <div class="principle-num">5</div>
+        <div class="principle-text">
+          <strong>Daily reflection, not weekly</strong>
+          <span>Weekly tools get forgotten. Daily tools become habits. LIA checks in every day with 3 smart questions based on what happened. 5 minutes. Compounding forever.</span>
+        </div>
+      </div>
+      <div class="principle">
+        <div class="principle-num">6</div>
+        <div class="principle-text">
+          <strong>No IT approval required</strong>
+          <span>LIA is a local HTML file calling an API. Nothing touches the corporate network. No software install. No security review. Works anywhere, day one.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- V1 SCOPE TABLE -->
+  <div class="section">
+    <div class="section-label">Scope</div>
+    <div class="section-title">What V1 includes and excludes</div>
+    <div class="section-sub">V1 is deliberately focused. The founder is the first user. Real feedback from real use defines V2.</div>
+
+    <table class="scope-table" style="margin-top:16px;">
+      <thead>
+        <tr>
+          <th style="width:35%;">Capability</th>
+          <th style="width:15%;">V1</th>
+          <th style="width:50%;">Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Voice observation capture</td><td class="yes">✓ V1</td><td>Upload transcribed memo as text. Web Speech API for in-browser recording.</td></tr>
+        <tr><td>Document upload (PDF, DOCX, PPTX)</td><td class="yes">✓ V1</td><td>FileReader API, parsed client-side, added to context store.</td></tr>
+        <tr><td>Daily reflection check-in</td><td class="yes">✓ V1</td><td>LIA generates 3 smart questions based on current context. 5 minute flow.</td></tr>
+        <tr><td>Context store (GitHub)</td><td class="yes">✓ V1</td><td>Structured folder in private repo. Read via GitHub API.</td></tr>
+        <tr><td>Entry brief deck (PPTX)</td><td class="yes">✓ V1</td><td>Session 1 deliverable. Day 1 point of view.</td></tr>
+        <tr><td>30-day assessment deck (PPTX)</td><td class="yes">✓ V1</td><td>Session 2 deliverable. Findings, themes, gaps.</td></tr>
+        <tr><td>90-day priorities deck (PPTX)</td><td class="yes">✓ V1</td><td>Session 3 deliverable. Strategy and team plan.</td></tr>
+        <tr><td>First week summary (Word)</td><td class="yes">✓ V1</td><td>McKinsey format. Audience-aware. For CIO or manager.</td></tr>
+        <tr><td>Next 30-day plan (Word)</td><td class="yes">✓ V1</td><td>Generated from actual week 1 learning. Specific, named, prioritized.</td></tr>
+        <tr><td>Daily intelligence brief</td><td class="yes">✓ V1</td><td>What LIA learned today. Patterns noticed. What to focus on.</td></tr>
+        <tr><td>Weekly intelligence brief</td><td class="yes">✓ V1</td><td>Synthesizes full week. Open questions. Stakeholder signals.</td></tr>
+        <tr><td>Stakeholder trust map</td><td class="yes">✓ V1</td><td>Aligned, at risk, unknown. Updates as context grows.</td></tr>
+        <tr><td>Decisions log</td><td class="yes">✓ V1</td><td>LIA maintains this from reflection and observation inputs.</td></tr>
+        <tr><td>User authentication</td><td class="no">✗ V1</td><td class="v2">V2 — Vercel + auth when ready to share externally.</td></tr>
+        <tr><td>Automated email ingestion</td><td class="no">✗ V1</td><td class="v2">V2 — paste email threads manually for now.</td></tr>
+        <tr><td>Calendar integration</td><td class="no">✗ V1</td><td class="v2">V2 — manual context about meetings for now.</td></tr>
+        <tr><td>Automated meeting transcription</td><td class="no">✗ V1</td><td class="v2">V2 — Teams/Zoom native transcripts uploaded manually.</td></tr>
+        <tr><td>Stripe billing</td><td class="no">✗ V1</td><td class="v2">V2 — personal tool first, monetize after validation.</td></tr>
+        <tr><td>Mobile optimization</td><td class="no">✗ V1</td><td class="v2">V2 — desktop Chrome only for now.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- BUILD SESSIONS -->
+  <div class="section">
+    <div class="section-label">Build plan</div>
+    <div class="section-title">Four sessions to a working V1</div>
+    <div class="section-sub">Each session produces something usable. Session 1 ships before day one of the new role.</div>
+
+    <div class="card" style="margin-top:16px;">
+      <div class="session">
+        <div class="session-badge s1">Session 1</div>
+        <div class="session-content">
+          <strong>Core intake + entry brief deck + daily reflection flow</strong>
+          <span>Role intake wizard. System prompt engineering. Entry brief PPTX output. Daily check-in UI. Basic context store setup in GitHub.</span>
+        </div>
+        <div class="session-time">This week</div>
+      </div>
+      <div class="session">
+        <div class="session-badge s2">Session 2</div>
+        <div class="session-content">
+          <strong>Document upload + context synthesis + 30-day assessment</strong>
+          <span>FileReader API for document ingestion. Voice memo upload. Context library viewer. 30-day assessment deck with dynamic content generation.</span>
+        </div>
+        <div class="session-time">Week 2–3</div>
+      </div>
+      <div class="session">
+        <div class="session-badge s3">Session 3</div>
+        <div class="session-content">
+          <strong>Weekly brief + advisory artifacts + first week summary</strong>
+          <span>Weekly and daily intelligence brief generation. Stakeholder trust map. First week summary in Word (McKinsey format). Next 30-day plan generation.</span>
+        </div>
+        <div class="session-time">Week 4–5</div>
+      </div>
+      <div class="session">
+        <div class="session-badge s4">Session 4+</div>
+        <div class="session-content">
+          <strong>90-day priorities deck + refinement + V2 scoping</strong>
+          <span>90-day strategic priorities deck. Board presentation template. Refinement from real use in the first 90 days. V2 pattern intelligence scoping based on what the founder actually needed.</span>
+        </div>
+        <div class="session-time">Month 2–3</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- VERSION ROADMAP -->
+  <div class="section">
+    <div class="section-label">Product roadmap</div>
+    <div class="section-title">Four versions. One through line — making you a better leader.</div>
+    <div class="section-sub">Every version makes you more effective, more self-aware, and more deliberate in how you lead. LIA grows with you. The org benefits because you get better — but that is the consequence, not the design goal.</div>
+
+    <div style="margin-top:20px;position:relative;">
+
+      <!-- Version cards -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:8px;">
+
+        <!-- V1 -->
+        <div style="background:white;border:1px solid #E8ECF0;border-top:4px solid #0F6E56;border-radius:10px;padding:20px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+            <div style="background:#0F6E56;color:white;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;">V1 · Now</div>
+          </div>
+          <div style="font-size:15px;font-weight:700;color:#1B2B4B;margin-bottom:6px;">Run with you</div>
+          <div style="font-size:12px;color:#555;line-height:1.6;margin-bottom:12px;">LIA learns your world from day one. Captures your observations, synthesizes your context, generates your communications. You show up prepared for every moment.</div>
+          <div style="font-size:11px;color:#888;border-top:1px solid #F0F0F0;padding-top:10px;">
+            <div style="margin-bottom:4px;color:#0F6E56;font-weight:600;">Inputs</div>
+            <div style="margin-bottom:2px;">· Voice observations</div>
+            <div style="margin-bottom:2px;">· Document absorption</div>
+            <div style="margin-bottom:8px;">· Daily reflection</div>
+            <div style="margin-bottom:4px;color:#0F6E56;font-weight:600;">Outputs</div>
+            <div style="margin-bottom:2px;">· Decks (PPTX)</div>
+            <div style="margin-bottom:2px;">· Word documents</div>
+            <div>· Intelligence briefs</div>
+          </div>
+        </div>
+
+        <!-- V2 -->
+        <div style="background:white;border:1px solid #E8ECF0;border-top:4px solid #3C3489;border-radius:10px;padding:20px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+            <div style="background:#3C3489;color:white;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;">V2 · Month 3–6</div>
+          </div>
+          <div style="font-size:15px;font-weight:700;color:#1B2B4B;margin-bottom:6px;">Pattern intelligence</div>
+          <div style="font-size:12px;color:#555;line-height:1.6;margin-bottom:12px;">LIA surfaces what you can't see yourself. Stakeholder patterns, communication patterns, decision patterns — hypotheses from your own observations that make you more self-aware as a leader.</div>
+          <div style="font-size:11px;color:#888;border-top:1px solid #F0F0F0;padding-top:10px;">
+            <div style="margin-bottom:4px;color:#3C3489;font-weight:600;">New capabilities</div>
+            <div style="margin-bottom:2px;">· Pattern detection across obs.</div>
+            <div style="margin-bottom:2px;">· Stakeholder signal tracking</div>
+            <div style="margin-bottom:2px;">· Calendar integration</div>
+            <div style="margin-bottom:2px;">· Auto email ingestion</div>
+            <div style="margin-bottom:8px;">· Teams/Zoom auto-transcript</div>
+            <div style="margin-bottom:4px;color:#3C3489;font-weight:600;">New outputs</div>
+            <div style="margin-bottom:2px;">· Pattern hypothesis briefs</div>
+            <div>· Leadership signal reports</div>
+          </div>
+        </div>
+
+        <!-- V3 -->
+        <div style="background:white;border:1px solid #E8ECF0;border-top:4px solid #D85A30;border-radius:10px;padding:20px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+            <div style="background:#D85A30;color:white;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;">V3 · Month 6–12</div>
+          </div>
+          <div style="font-size:15px;font-weight:700;color:#1B2B4B;margin-bottom:6px;">Anticipatory intelligence</div>
+          <div style="font-size:12px;color:#555;line-height:1.6;margin-bottom:12px;">LIA runs ahead of you. Prepares your brief before you ask. Board meeting Thursday? LIA generates it Wednesday night — because it knows your calendar, your context, and what that audience cares about.</div>
+          <div style="font-size:11px;color:#888;border-top:1px solid #F0F0F0;padding-top:10px;">
+            <div style="margin-bottom:4px;color:#D85A30;font-weight:600;">New capabilities</div>
+            <div style="margin-bottom:2px;">· Proactive brief generation</div>
+            <div style="margin-bottom:2px;">· Meeting prep automation</div>
+            <div style="margin-bottom:2px;">· Mobile morning brief</div>
+            <div style="margin-bottom:2px;">· Vercel hosting</div>
+            <div style="margin-bottom:8px;">· Multi-user (your directs)</div>
+            <div style="margin-bottom:4px;color:#D85A30;font-weight:600;">New outputs</div>
+            <div style="margin-bottom:2px;">· Pre-meeting briefs</div>
+            <div>· Morning leadership digest</div>
+          </div>
+        </div>
+
+        <!-- V4 -->
+        <div style="background:white;border:1px solid #E8ECF0;border-top:4px solid #BA7517;border-radius:10px;padding:20px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+            <div style="background:#BA7517;color:white;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;">V4 · Year 2+</div>
+          </div>
+          <div style="font-size:15px;font-weight:700;color:#1B2B4B;margin-bottom:6px;">Leadership mastery</div>
+          <div style="font-size:12px;color:#555;line-height:1.6;margin-bottom:12px;">Over time LIA builds a picture of you as a leader — your strengths, your blind spots, your most effective communication modes, the environments where you thrive. A mirror that makes you genuinely better with every passing month.</div>
+          <div style="font-size:11px;color:#888;border-top:1px solid #F0F0F0;padding-top:10px;">
+            <div style="margin-bottom:4px;color:#BA7517;font-weight:600;">New capabilities</div>
+            <div style="margin-bottom:2px;">· Leadership style profiling</div>
+            <div style="margin-bottom:2px;">· Blind spot identification</div>
+            <div style="margin-bottom:2px;">· Communication effectiveness</div>
+            <div style="margin-bottom:2px;">· Stripe billing / paid tiers</div>
+            <div style="margin-bottom:8px;">· Executive coach integration</div>
+            <div style="margin-bottom:4px;color:#BA7517;font-weight:600;">New outputs</div>
+            <div style="margin-bottom:2px;">· Leadership growth report</div>
+            <div>· Quarterly self-assessment</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Through line -->
+      <div style="background:#1B2B4B;border-radius:10px;padding:20px 24px;margin-top:20px;display:flex;align-items:center;gap:20px;">
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:700;color:white;margin-bottom:4px;">The through line across all four versions</div>
+          <div style="font-size:12px;color:#7B9EC4;line-height:1.6;">LIA is not built for the organization. It is built for you. Every version makes you a better leader — more prepared, more self-aware, more deliberate. Your organization benefits because you get better. That is the consequence, not the design goal.</div>
+        </div>
+        <div style="text-align:center;flex-shrink:0;">
+          <div style="font-size:28px;font-weight:700;color:#5DCAA5;">V1→V4</div>
+          <div style="font-size:11px;color:#7B9EC4;">leader growth</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- COMMERCIAL CONTEXT -->
+  <div class="section">
+    <div class="section-label">Commercial context</div>
+    <div class="section-title">Why this product, why now</div>
+
+    <div class="grid-2" style="margin-top:16px;">
+      <div class="card">
+        <div class="card-title" style="margin-bottom:8px;">The buyer</div>
+        <div style="font-size:12px;color:#555;line-height:1.6;">Technology executives and senior leaders who want to be better at their craft. Starting with the onboarding moment — the highest-pain, highest-stakes period of any leadership role. Natural expansion to any senior leader at any stage of their tenure.</div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:8px;">The alternative they have today</div>
+        <div style="font-size:12px;color:#555;line-height:1.6;">McKinsey 90-day engagement at $200K+. Executive coach at $500/hr. Generic AI tools that start from a blank page every time. Or winging it on experience and hoping it's enough. LIA replaces all of these — with context that compounds every day.</div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:8px;">The founding story</div>
+        <div style="font-size:12px;color:#555;line-height:1.6;">Built by Adeel Khan — 20+ years of enterprise platform leadership at Amway, Wolverine Worldwide, and Stanley Black &amp; Decker. LIA was built because its founder needed it starting week one of a new senior role. That is the strongest possible product foundation.</div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:8px;">The portfolio</div>
+        <div style="font-size:12px;color:#555;line-height:1.6;"><strong style="color:#0F6E56;">Career Intelligence</strong> got you the role. <strong style="color:#1B2B4B;">Leadership Intel Agent</strong> makes you exceptional in it. <strong style="color:#D85A30;">Vendor Intelligence</strong> evaluates the platforms that support your strategy. Three products. Three moments in a senior leader's career. One 4thLayerLab intelligence thread.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">Leadership Intel Agent</div>
+      <div class="footer-meta" style="margin-top:4px;">The intelligence layer that runs with you.</div>
+    </div>
+    <div style="text-align:right;">
+      <div class="footer-meta">4thLayerLab Strategy &amp; Advisory</div>
+      <div class="footer-meta" style="margin-top:4px;">V1–V4 Product Blueprint · June 2026 · Confidential</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
